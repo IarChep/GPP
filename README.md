@@ -2,7 +2,7 @@
 GPP is a C++/Qt library built for working with the GdePosylka/PackageRadar services for package tracking. It is built on HTML parsing using the [mylogin/htmlparser](https://github.com/mylogin/htmlparser) library.
 
 ## 🛠️ Build Instructions
-To build the project, simply download and install Qt version 6 or higher, open the project in Qt Creator, and build it.  
+To build the project, simply download and install Qt version 6 or higher, open the project in Qt Creator, and build it. This library requers c++17  
 __!!NLOAHMAN_JSON LIBRARY IS REQUERED!!__
 Use `-DGPP_LIBRARY_BUILD_STATIC=true` to build a static lib.   
 All compilers are supported, but debug version is only for g++/MinGW!    
