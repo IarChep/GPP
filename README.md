@@ -6,7 +6,7 @@ To build the project, simply download and install Qt version 6 or higher, open t
 __!!NLOAHMAN_JSON LIBRARY IS REQUERED!!__
 Use `-DGPP_LIBRARY_BUILD_STATIC=true` to build a static lib.   
 All compilers are supported, but debug version is only for g++/MinGW!    
-Qt 5 should also work, but it is not recommended as it has not been tested.
+Qt 5 should also work, but it is not recommended as it has not been tested. Anyway, you can fix some compatibility errors by yourself!
 
 ## 📄 Documentation
 You can find documentation [here](https://github.com/YaroslavChepel/GPP/blob/main/Documentation/Documentation.md)
