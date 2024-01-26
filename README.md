@@ -11,7 +11,7 @@ Qt 5 should also work, but it is not recommended as it has not been tested. Anyw
 ## 📄 Documentation
 You can find documentation [here](https://github.com/YaroslavChepel/GPP/blob/main/Documentation/Documentation.md)
 ## 🚀 Usage
-To get examples, please follow [this](https://github.com/YaroslavChepel/GPP/blob/main/Examples/Examples.md) link.
+To get examples, please follow [this](https://github.com/YaroslavChepel/GPP/blob/main/Examples/Examples.cpp) link.
 
 ## 🙏 Acknowledgements
 A big thank you to [mylogin](https://github.com/mylogin) for the wonderful HTML parsing library! Without it, this project would not have been possible.
