@@ -20,11 +20,11 @@ class parcel_storage : public QObject
 
         //the one function that has a code inside header file. I did it bcs templates work only this way.
         template<typename... Parcels>
-        void add_parcel(Parcel parcel, Parcels... tail) {
+        void add_parcels(Parcel parcel, Parcels... tail) {
             parcels.push_back(parcel);
 
             if constexpr (sizeof...(tail) > 0) {
-                add_parcel(tail...);
+                add_parcels(tail...);
             } else {
                 emit added_successfully();
             }

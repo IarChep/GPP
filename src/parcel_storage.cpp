@@ -154,7 +154,7 @@ void GPP::parcel_storage::load_from_json(const QString &path) {
                         holder.info.push_back(QString::fromStdString(i));
                     }
                 }
-                this->add_parcel(holder);
+                this->add_parcels(holder);
                 holder.clear_shipping_states();
             }
         }
@@ -218,7 +218,7 @@ void GPP::parcel_storage::load_from_json() {
                         holder.info.push_back(QString::fromStdString(i));
                     }
                 }
-                this->add_parcel(holder);
+                this->add_parcels(holder);
                 holder.clear_shipping_states();
                 holder.info.clear();
             }
@@ -262,7 +262,7 @@ void GPP::parcel_storage::load_shipping_infos() {
         }
 }
 void GPP::parcel_storage::move_parcel_to_other_storage(int index, GPP::parcel_storage other_storage) {
-    other_storage.add_parcel(parcels[index]);
+    other_storage.add_parcels(parcels[index]);
     this->delete_parsel(index);
 }
 QList<GPP::Parcel> GPP::parcel_storage::get_parcels() {
