@@ -336,7 +336,7 @@ QList<GPP::info_storage> GPP::search::parse_html(std::string html, QUrl site_url
                 result.date = GPP::search::cleanString(dateAndTime);
                 result.delivery_service = GPP::search::cleanString(deliveryService);
                 result.icon = GPP::search::cleanString(icon_final);
-                results.emplace_back(result);
+                results.push_back(result);
             }
         }
     } else {
