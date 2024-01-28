@@ -2,6 +2,7 @@
 #define SEARCH_H
 
 #include <QObject>
+#include <QtGlobal>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -16,7 +17,6 @@
 #include <QDir>
 #include <QMap>
 #include "info_storage.h"
-#include <nlohmann/json.hpp>
 
 namespace GPP {
 class search : public QObject
@@ -61,8 +61,6 @@ private:
     QByteArray postData;
     QString cleanString(std::string& str);
     QList<GPP::info_storage> parse_html(std::string html, QUrl site_url);
-    nlohmann::json j_array = nlohmann::json::array();
-    nlohmann::json j;
 };
 
 

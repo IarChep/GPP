@@ -1,5 +1,6 @@
 #ifndef PARCEL_STORAGE_H
 #define PARCEL_STORAGE_H
+
 #include <QObject>
 #include <QDebug>
 #include <QFile>
@@ -8,7 +9,10 @@
 #include <QTextStream>
 #include "parcel.h"
 #include "search.h"
-#include <nlohmann/json.hpp>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonValue>
+#include <QJsonObject>
 #include <iostream>
 
 namespace GPP {
@@ -54,12 +58,11 @@ class parcel_storage : public QObject
         GPP::search s;
         std::string token;
         QList<Parcel> parcels;
-        nlohmann::json j_array = nlohmann::json::array();
-        nlohmann::json j;
-        std::vector<std::string> shipping_states;
-        std::vector<std::string> p_info;
+        QJsonDocument j_doc;
+        QJsonObject j_obj;
+        QJsonArray main_array;
+        QJsonArray shipping_states;
+        QJsonArray p_info;
     };
 }
-
-
 #endif // PARCEL_STORAGE_H

@@ -53,7 +53,11 @@ void GPP::search::parcel_search(QString track_num) {
     cookieJar->setCookiesFromUrl(cookieList, QUrl("https://gdeposylka.ru/form"));
     manager.setCookieJar(cookieJar);
     postData.clear();
-    postData.append("tracking_form[tracking_number]="+track_num.toStdString()); // Замените на свои данные
+#if QT_VERSION_MAJOR >= 6
+    postData.append("tracking_form[tracking_number]="+track_num.toStdString());
+#else
+    postData.append("tracking_form[tracking_number]="+track_num);
+#endif
     reply = manager.post(request, postData);
 
     QObject::connect(reply, &QNetworkReply::finished, [&] {
@@ -94,7 +98,11 @@ void GPP::search::parcel_search_bool(QString track_num) {
     cookieJar->setCookiesFromUrl(cookieList, QUrl(service_url+"form"));
     manager.setCookieJar(cookieJar);
     postData.clear();
-    postData.append("tracking_form[tracking_number]="+track_num.toStdString()); // Замените на свои данные
+#if QT_VERSION_MAJOR >= 6
+    postData.append("tracking_form[tracking_number]="+track_num.toStdString());
+#else
+    postData.append("tracking_form[tracking_number]="+track_num);
+#endif
     reply = manager.post(request, postData);
 
     QObject::connect(reply, &QNetworkReply::finished, [&] {
@@ -152,7 +160,11 @@ void GPP::search::multiple_search(QStringList track_num_list) {
     manager.setCookieJar(cookieJar);
     for(QString i : track_num_list) {
         postData.clear();
-        postData.append("tracking_form[tracking_number]="+i.toStdString()); // Замените на свои данные
+#if QT_VERSION_MAJOR >= 6
+        postData.append("tracking_form[tracking_number]="+i.toStdString());
+#else
+        postData.append("tracking_form[tracking_number]="+i);
+#endif
         reply = manager.post(request, postData);
         QEventLoop loop;
         QObject::connect(reply, &QNetworkReply::finished, [&] {
@@ -209,7 +221,11 @@ void GPP::search::multiple_search_bool(QStringList track_num_list) {
     manager.setCookieJar(cookieJar);
     for(int i = 0; i < track_num_list.length(); i++) {
         postData.clear();
-        postData.append("tracking_form[tracking_number]="+track_num_list[i].toStdString()); // Замените на свои данные
+#if QT_VERSION_MAJOR >= 6
+        postData.append("tracking_form[tracking_number]="+track_num_list[i].toStdString());
+#else
+        postData.append("tracking_form[tracking_number]="+track_num_list[i]);
+#endif
         reply = manager.post(request, postData);
         QEventLoop loop;
         QObject::connect(reply, &QNetworkReply::finished, [&] {

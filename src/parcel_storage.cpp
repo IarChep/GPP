@@ -13,220 +13,239 @@ void GPP::parcel_storage::delete_parsel(int index) {
 }
 void GPP::parcel_storage::save_to_json(const QString &path) {
     for (int i = 0; i < this->parcels.size(); i++) {
-            j["Parcel"]["name"] = this->parcels.at(i).name.toStdString();
-            j["Parcel"]["track_num"] = this->parcels.at(i).track_num.toStdString();
-            j["Parcel"]["gp_url"] = this->parcels.at(i).gp_url.toStdString();
-            for(QString is : this->parcels.at(i).info) {
-                p_info.push_back(is.toStdString());
-            }
-            for(GPP::info_storage i : this->parcels.at(i).shipping_state) {
-                std::string data;
+        QJsonObject parcel_obj;
+        parcel_obj.insert("name",QJsonValue(this->parcels.at(i).name));
+        parcel_obj.insert("track_num", QJsonValue(this->parcels.at(i).track_num));
+        parcel_obj.insert("gp_url", QJsonValue(this->parcels.at(i).gp_url));
+        for(QString is : this->parcels.at(i).info) {
+            p_info.push_back(QJsonValue(is));
+        }
+        for(GPP::info_storage i : this->parcels.at(i).shipping_state) {
+            QString data;
             if(i.error.isEmpty()) {
-                    data = i.delivery_state.toStdString() + "#*#" + i.status.toStdString() + "#*#" + i.date.toStdString() + "#*#" + i.delivery_service.toStdString() + "#*#" + i.icon.toStdString();
-                } else {
-                    shipping_states.push_back("Error!");
-                    data = i.error.toStdString();
-                }
-                shipping_states.push_back(data);
+                data = i.delivery_state + "#*#" + i.status + "#*#" + i.date + "#*#" + i.delivery_service + "#*#" + i.icon;
+            } else {
+                shipping_states.push_back("Error!");
+                data = i.error;
             }
-            j["Parcel"]["shipping_state"] = shipping_states;
-            j["Parcel"]["info"] = p_info;
-            qDebug().noquote() << shipping_states;
-            j_array.push_back(j);
-            j.clear();
-            shipping_states.clear();
-            p_info.clear();
+            shipping_states.push_back(QJsonValue(data));
         }
-        QFile json_doc(path);
-        QFileInfo jinfo(json_doc);
-        if (!json_doc.exists()) {
-            QDir dir;
-            if (!dir.exists(jinfo.absolutePath())) {
-                dir.mkpath(jinfo.absolutePath());
-            }
+        parcel_obj.insert("shipping_state", shipping_states);
+        parcel_obj.insert("info", p_info);
+
+        j_obj["Parcel"] = parcel_obj;
+
+        main_array.push_back(j_obj);
+
+        shipping_states = QJsonArray();
+        p_info = QJsonArray();
+        j_obj = QJsonObject();
+    }
+    QFile json_doc(path);
+    QFileInfo jinfo(json_doc);
+    if (!json_doc.exists()) {
+        QDir dir;
+        if (!dir.exists(jinfo.absolutePath())) {
+            dir.mkpath(jinfo.absolutePath());
         }
-        if (json_doc.open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Truncate)){
-            QTextStream out(&json_doc);
-            out << QString::fromStdString(j_array.dump(4));
-            json_doc.close();
-            emit json_ready();
-        } else {
-            qDebug() <<"Failed to open a file!";
-        }
-        j_array.clear();
+    }
+    if (json_doc.open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Truncate)){
+        QTextStream out(&json_doc);
+        out << QJsonDocument(main_array).toJson(QJsonDocument::Indented);
+        json_doc.close();
+        emit json_ready();
+    } else {
+        qDebug() <<"Failed to open a file!";
+    }
+    main_array = QJsonArray();
+
 
 }
 void GPP::parcel_storage::save_to_json() {
-        for (int i = 0; i < this->parcels.size(); i++) {
-            j["Parcel"]["name"] = this->parcels.at(i).name.toStdString();
-            j["Parcel"]["track_num"] = this->parcels.at(i).track_num.toStdString();
-            j["Parcel"]["gp_url"] = this->parcels.at(i).gp_url.toStdString();
-            for(QString is : this->parcels.at(i).info) {
-                p_info.push_back(is.toStdString());
+    for (int i = 0; i < this->parcels.size(); i++) {
+        QJsonObject parcel_obj;
+        parcel_obj.insert("name",QJsonValue(this->parcels.at(i).name));
+        parcel_obj.insert("track_num", QJsonValue(this->parcels.at(i).track_num));
+        parcel_obj.insert("gp_url", QJsonValue(this->parcels.at(i).gp_url));
+        for(QString is : this->parcels.at(i).info) {
+            p_info.push_back(QJsonValue(is));
+        }
+        for(GPP::info_storage i : this->parcels.at(i).shipping_state) {
+            QString data;
+            if(i.error.isEmpty()) {
+                data = i.delivery_state + "#*#" + i.status + "#*#" + i.date + "#*#" + i.delivery_service + "#*#" + i.icon;
+            } else {
+                shipping_states.push_back("Error!");
+                data = i.error;
             }
-            for(GPP::info_storage i : this->parcels.at(i).shipping_state) {
-                std::string data;
-                if(i.error.isEmpty()) {
-                    data = i.delivery_state.toStdString() + "#*#" + i.status.toStdString() + "#*#" + i.date.toStdString() + "#*#" + i.delivery_service.toStdString() + "#*#" + i.icon.toStdString();
-                } else {
-                    shipping_states.push_back("Error!");
-                    data = i.error.toStdString();
-                }
-                shipping_states.push_back(data);
-            }
-            j["Parcel"]["shipping_state"] = shipping_states;
-            j["Parcel"]["info"] = p_info;
-            j_array.push_back(j);
-            j.clear();
-            shipping_states.clear();
+            shipping_states.push_back(QJsonValue(data));
         }
-        QDir gpp_dir("./gpp");
-        if (!gpp_dir.exists()) {
-            gpp_dir.mkdir(".");
-        }
-        QFile json_doc("./gpp/parcels.json");
-        if (json_doc.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)){
-            QTextStream out(&json_doc);
-            out << QString::fromStdString(j_array.dump(4));
-            json_doc.close();
-            emit json_ready();
-        }else {
-            qDebug() <<"Failed to open a file!";
-        }
-        j_array.clear();
+        parcel_obj.insert("shipping_state", shipping_states);
+        parcel_obj.insert("info", p_info);
+
+        j_obj["Parcel"] = parcel_obj;
+
+        main_array.push_back(j_obj);
+
+        shipping_states = QJsonArray();
+        p_info = QJsonArray();
+        j_obj = QJsonObject();
+    }
+    QDir gpp_dir("./gpp");
+    if (!gpp_dir.exists()) {
+        gpp_dir.mkdir(".");
+    }
+    QFile json_doc("./gpp/parcels.json");
+    if (json_doc.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)){
+        QTextStream out(&json_doc);
+        out << QJsonDocument(main_array).toJson(QJsonDocument::Indented);
+        json_doc.close();
+        emit json_ready();
+    }else {
+        qDebug() <<"Failed to open a file!";
+    }
+    main_array = QJsonArray();
 
 }
 void GPP::parcel_storage::load_from_json(const QString &path) {
-        GPP::Parcel holder("0");
-        QFile json_doc(path);
-        if (json_doc.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            j = nlohmann::json::parse(json_doc.readAll().toStdString());
-            for (const auto& item : j) {
-                if (!item["Parcel"]["name"].empty() && !item["Parcel"]["track_num"].empty()) {
-                    holder.set_name(QString::fromStdString(item["Parcel"]["name"]));
-                    holder.set_track_num(QString::fromStdString(item["Parcel"]["track_num"]));
-                }
-                if (item["Parcel"]["name"].empty() && !item["Parcel"]["track_num"].empty()) {
-                    holder.set_track_num(QString::fromStdString(item["Parcel"]["track_num"]));
-                }
-                if (!item["Parcel"]["shipping_state"].empty()) {
-                    for (std::string i : item["Parcel"]["shipping_state"]) {
-                        QList<GPP::info_storage> list;
-                        GPP::info_storage is;
-                        std::string delimiter = "#*#";
-                        int counter=0;
-                        size_t pos = 0;
-                        if (i == "Error!") {
-                            is.error = QString::fromStdString(item["Parcel"]["shipping_state"][1]);
-                            counter = 10;
-                        } else {
-                            while ((pos = i.find(delimiter)) != std::string::npos) {
-                                token = i.substr(0, pos);
-                                switch (counter) {
-                                case 0:
-                                    is.delivery_state = QString::fromStdString(token);
-                                    break;
-                                case 1:
-                                    is.status = QString::fromStdString(token);
-                                    break;
-                                case 2:
-                                    is.date = QString::fromStdString(token);
-                                    break;
-                                case 3:
-                                    is.delivery_service = QString::fromStdString(token);
-                                    break;
-                                case 4:
-                                    is.icon = QString::fromStdString(token);
-                                    break;
-                                }
-                                counter += 1;
-                                i.erase(0, pos + delimiter.length());
-                            };
-                        }
-                        holder.add_shipping_state(is);
-                    }
-                }
-                if (!item["Parcel"]["gp_url"].empty()) {
-                    holder.gp_url = QString::fromStdString(item["Parcel"]["gp_url"]);
-                }
-                if (!item["Parcel"]["info"].empty()) {
-                    for(std::string i : item["Parcel"]["info"]) {
-                        holder.info.push_back(QString::fromStdString(i));
-                    }
-                }
-                this->add_parcels(holder);
-                holder.clear_shipping_states();
+    GPP::Parcel holder("0");
+    QFile json_doc(path);
+    if (json_doc.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        main_array = QJsonDocument::fromJson(json_doc.readAll()).array();
+        for (const QJsonValueRef& item : main_array) {
+            if (!item.toObject()["name"].isNull() && !item.toObject()["track_num"].isNull()) {
+                holder.set_name(item.toObject()["name"].toString());
+                holder.set_track_num(item.toObject()["track_num"].toString());
             }
+            if (item.toObject()["name"].isNull() && !item.toObject()["track_num"].isNull()) {
+                holder.set_track_num(item.toObject()["track_num"].toString());
+            }
+            if (!item.toObject()["shipping_state"].isNull()) {
+                for (QJsonValueRef i : item.toObject()["shipping_state"].toArray()) {
+                    QList<GPP::info_storage> list;
+                    GPP::info_storage is;
+                    std::string delimiter = "#*#";
+                    int counter=0;
+                    size_t pos = 0;
+                    std::string shipping_text = i.toString().toStdString();
+                    if (i.toString() == "Error!") {
+                        is.error = item.toObject()["shipping_state"].toArray()[1].toString();
+                        counter = 10;
+                    } else {
+                        while ((pos = shipping_text.find(delimiter)) != std::string::npos) {
+                            token = shipping_text.substr(0, pos);
+                            switch (counter) {
+                            case 0:
+                                is.delivery_state = QString::fromStdString(token);
+                                break;
+                            case 1:
+                                is.status = QString::fromStdString(token);
+                                break;
+                            case 2:
+                                is.date = QString::fromStdString(token);
+                                break;
+                            case 3:
+                                is.delivery_service = QString::fromStdString(token);
+                                break;
+                            case 4:
+                                is.icon = QString::fromStdString(token);
+                                break;
+                            }
+                            counter += 1;
+                            shipping_text.erase(0, pos + delimiter.length());
+                        };
+                    }
+                    holder.add_shipping_state(is);
+                }
+            }
+            if (!item.toObject()["gp_url"].isNull()) {
+                holder.gp_url = item.toObject()["gp_url"].toString();
+            }
+            if (!item.toObject()["info"].isNull()) {
+                for(QJsonValueRef i : item.toObject()["info"].toArray()) {
+                    holder.info.push_back(i.toString());
+                }
+            }
+            this->add_parcels(holder);
+            holder.clear_shipping_states();
+            holder.info.clear();
         }
-        emit load_finished();
+    } else {
+        qDebug() << "Failed to open a file!";
+        return;
+    }
+    main_array = QJsonArray();
+    emit load_finished();
 }
 void GPP::parcel_storage::load_from_json() {
-        GPP::Parcel holder("0");
-        QFile json_doc("./gpp/parcels.json");
-        if (json_doc.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            j = nlohmann::json::parse(json_doc.readAll().toStdString());
-            for (const auto& item : j) {
-                if (!item["Parcel"]["name"].empty() && !item["Parcel"]["track_num"].empty()) {
-                    holder.set_name(QString::fromStdString(item["Parcel"]["name"]));
-                    holder.set_track_num(QString::fromStdString(item["Parcel"]["track_num"]));
-                }
-                if (item["Parcel"]["name"].empty() && !item["Parcel"]["track_num"].empty()) {
-                    holder.set_track_num(QString::fromStdString(item["Parcel"]["track_num"]));
-                }
-                if (!item["Parcel"]["shipping_state"].empty()) {
-                    for (std::string i : item["Parcel"]["shipping_state"]) {
-                        QList<GPP::info_storage> list;
-                        GPP::info_storage is;
-                        std::string delimiter = "#*#";
-                        int counter=0;
-                        size_t pos = 0;
-                        if (i == "Error!") {
-                            is.error = QString::fromStdString(item["Parcel"]["shipping_state"][1]);
-                            counter = 10;
-                        } else {
-                            while ((pos = i.find(delimiter)) != std::string::npos) {
-                                token = i.substr(0, pos);
-                                switch (counter) {
-                                case 0:
-                                    is.delivery_state = QString::fromStdString(token);
-                                    break;
-                                case 1:
-                                    is.status = QString::fromStdString(token);
-                                    break;
-                                case 2:
-                                    is.date = QString::fromStdString(token);
-                                    break;
-                                case 3:
-                                    is.delivery_service = QString::fromStdString(token);
-                                    break;
-                                case 4:
-                                    is.icon = QString::fromStdString(token);
-                                    break;
-                                }
-                                counter += 1;
-                                i.erase(0, pos + delimiter.length());
-                            };
-                        }
-                        holder.add_shipping_state(is);
-                    }
-                }
-                if (!item["Parcel"]["gp_url"].empty()) {
-                    holder.gp_url = QString::fromStdString(item["Parcel"]["gp_url"]);
-                }
-                if (!item["Parcel"]["info"].empty()) {
-                    for(std::string i : item["Parcel"]["info"]) {
-                        holder.info.push_back(QString::fromStdString(i));
-                    }
-                }
-                this->add_parcels(holder);
-                holder.clear_shipping_states();
-                holder.info.clear();
+    GPP::Parcel holder("0");
+    QFile json_doc("./gpp/parcels.json");
+    if (json_doc.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        main_array = QJsonDocument::fromJson(json_doc.readAll()).array();
+        for (const QJsonValueRef& item : main_array) {
+            if (!item.toObject()["Parcel"].toObject()["name"].isNull() && !item.toObject()["Parcel"].toObject()["track_num"].isNull()) {
+                holder.set_name(item.toObject()["Parcel"].toObject()["name"].toString());
+                holder.set_track_num(item.toObject()["Parcel"].toObject()["track_num"].toString());
             }
-        } else {
-            qDebug() << "Failed to open a file!";
-            return;
+            if (item.toObject()["Parcel"].toObject()["name"].isNull() && !item.toObject()["Parcel"].toObject()["track_num"].isNull()) {
+                holder.set_track_num(item.toObject()["Parcel"].toObject()["track_num"].toString());
+            }
+            if (!item.toObject()["Parcel"].toObject()["shipping_state"].isNull()) {
+                for (QJsonValueRef i : item.toObject()["Parcel"].toObject()["shipping_state"].toArray()) {
+                    QList<GPP::info_storage> list;
+                    GPP::info_storage is;
+                    std::string delimiter = "#*#";
+                    int counter=0;
+                    size_t pos = 0;
+                    std::string shipping_text = i.toString().toStdString();
+                    if (i.toString() == "Error!") {
+                        is.error = item.toObject()["Parcel"].toObject()["shipping_state"].toArray()[1].toString();
+                        counter = 10;
+                    } else {
+                        while ((pos = shipping_text.find(delimiter)) != std::string::npos) {
+                            token = shipping_text.substr(0, pos);
+                            switch (counter) {
+                            case 0:
+                                is.delivery_state = QString::fromStdString(token);
+                                break;
+                            case 1:
+                                is.status = QString::fromStdString(token);
+                                break;
+                            case 2:
+                                is.date = QString::fromStdString(token);
+                                break;
+                            case 3:
+                                is.delivery_service = QString::fromStdString(token);
+                                break;
+                            case 4:
+                                is.icon = QString::fromStdString(token);
+                                break;
+                            }
+                            counter += 1;
+                            shipping_text.erase(0, pos + delimiter.length());
+                        };
+                    }
+                    holder.add_shipping_state(is);
+                }
+            }
+            if (!item.toObject()["Parcel"].toObject()["gp_url"].isNull()) {
+                holder.gp_url = item.toObject()["Parcel"].toObject()["gp_url"].toString();
+            }
+            if (!item.toObject()["Parcel"].toObject()["info"].isNull()) {
+                for(QJsonValueRef i : item.toObject()["Parcel"].toObject()["info"].toArray()) {
+                    holder.info.push_back(i.toString());
+                }
+            }
+            this->add_parcels(holder);
+            holder.clear_shipping_states();
+            holder.info.clear();
         }
-        emit load_finished();
+    } else {
+        qDebug() << "Failed to open a file!";
+        return;
+    }
+    main_array = QJsonArray();
+    emit load_finished();
 }
 void GPP::parcel_storage::load_shipping_infos() {
         index=0;
