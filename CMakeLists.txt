@@ -8,17 +8,17 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-file(DOWNLOAD "https://raw.githubusercontent.com/mylogin/htmlparser/main/html.hpp" ${CMAKE_CURRENT_SOURCE_DIR}/src/html.hpp)
-file(DOWNLOAD "https://raw.githubusercontent.com/mylogin/htmlparser/main/html.cpp" ${CMAKE_CURRENT_SOURCE_DIR}/src/html.cpp)
+file(DOWNLOAD "https://raw.githubusercontent.com/mylogin/htmlparser/main/html.hpp" ${GPP_SOURCE_DIR}/src/gpp/html.hpp)
+file(DOWNLOAD "https://raw.githubusercontent.com/mylogin/htmlparser/main/html.cpp" ${GPP_SOURCE_DIR}/src/gpp/html.cpp)
 
 # Укажите исходные файлы вашей библиотеки
 set(SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/html.cpp ${CMAKE_SOURCE_DIR}/src/html.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/search.h ${CMAKE_SOURCE_DIR}/src/search.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/parcel_storage.h ${CMAKE_SOURCE_DIR}/src/parcel_storage.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/parcel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/gpp.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/info_storage.h
+    ${GPP_SOURCE_DIR}/src/gpp/html.cpp ${GPP_SOURCE_DIR}/src/gpp/html.hpp
+    ${GPP_SOURCE_DIR}/src/gpp/search.h ${GPP_SOURCE_DIR}/src/gpp/search.cpp
+    ${GPP_SOURCE_DIR}/src/gpp/parcel_storage.h ${GPP_SOURCE_DIR}/src/gpp/parcel_storage.cpp
+    ${GPP_SOURCE_DIR}/src/gpp/parcel.h
+    ${GPP_SOURCE_DIR}/src/gpp/gpp.h
+    ${GPP_SOURCE_DIR}/src/gpp/info_storage.h
 )
 
 if(GPP_LIBRARY_BUILD_STATIC)
